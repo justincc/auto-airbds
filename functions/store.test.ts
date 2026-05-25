@@ -19,13 +19,12 @@ describe("in-memory store", () => {
   });
 
   it("accepts upload again after a deletion frees a slot", () => {
-    store.push(
-      { id: "e1", timestamp: "", data: { n: 1 } },
-      { id: "e2", timestamp: "", data: { n: 2 } }
-    );
+    for (let i = 0; i < MAX_UPLOADS; i++) {
+      store.push({ id: `e${i}`, timestamp: "", data: { n: i } });
+    }
     expect(store.length).toBe(MAX_UPLOADS);
 
-    const idx = store.findIndex((e) => e.id === "e1");
+    const idx = store.findIndex((e) => e.id === "e0");
     store.splice(idx, 1);
     expect(store.length).toBe(MAX_UPLOADS - 1);
 
