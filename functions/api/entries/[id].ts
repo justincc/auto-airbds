@@ -1,14 +1,14 @@
-import { store } from "../../store";
+import type { Env } from "../../types";
 
-export const onRequestDelete: PagesFunction = async ({ params }) => {
-  const id = params.id as string;
-  const idx = store.findIndex((e) => e.id === id);
+export const onRequestDelete: PagesFunction<Env> = async (context) => {
+  const id = context.params.id as string;
 
-  if (idx === -1) {
+  const existing = await context.env.UPLOADS.get(id);
+  if (!existing) {
     return new Response("Not found", { status: 404 });
   }
 
-  store.splice(idx, 1);
+  await context.env.UPLOADS.delete(id);
 
   const headers: Record<string, string> = {
     "Access-Control-Allow-Origin": "*",

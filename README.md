@@ -3,10 +3,9 @@ An experimental website for collecting, processing and publishing AI-performed A
 ## Infrastructure
 
 - **Cloudflare Pages** — hosting and serverless functions (Pages Functions) for the API endpoints (`POST /api/upload`, `GET /api/entries`)
+- **Cloudflare KV** — persistent key-value store shared across all function instances
 - **React** — frontend SPA built with TypeScript
 - **Vite** — build tool and dev server
-
-In-memory storage: entries persist across requests within a warm worker instance but are lost on cold start or redeploy.
 
 ## Local testing
 
@@ -17,8 +16,8 @@ npm install
 # Build the frontend
 npm run build
 
-# Start the local preview server (includes API functions)
-npm run pages:dev
+# Start the local preview server with KV support (includes API functions)
+npx wrangler pages dev dist --kv=UPLOADS
 
 # In another terminal, upload JSON:
 curl -X POST http://localhost:8788/api/upload \
@@ -30,6 +29,18 @@ curl -X POST http://localhost:8788/api/upload \
 ```
 
 The default port is `8788`. Use `--port <number>` to change it.
+
+For local development with KV, start the server with:
+```bash
+npx wrangler pages dev dist --kv=UPLOADS
+```
+
+### Production KV setup
+
+1. In the Cloudflare Dashboard, go to **Workers & Pages** → **KV** → **Create namespace** → name it `auto-airbds`
+2. Go to your Pages project → **Settings** → **Functions** → **KV namespace bindings** → **Add binding**
+   - Variable name: `UPLOADS`
+   - KV namespace: select `auto-airbds`
 
 A test upload script is available at `scripts/test-upload.sh`:
 

@@ -1,9 +1,9 @@
-import { store, type UploadEntry } from "../store";
+import type { UploadEntry, Env } from "../types";
 
 const API_KEY = "auto-airbds-dev-key";
 const MAX_UPLOADS = 30;
 
-export const onRequest: PagesFunction = async (context) => {
+export const onRequest: PagesFunction<Env> = async (context) => {
   if (context.request.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
   }
@@ -12,7 +12,8 @@ export const onRequest: PagesFunction = async (context) => {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  if (store.length >= MAX_UPLOADS) {
+  const { keys } = await context.env.UPLOADS.list();
+  if (keys.length >= MAX_UPLOADS) {
     return new Response("Upload limit reached", { status: 429 });
   }
 
@@ -29,7 +30,7 @@ export const onRequest: PagesFunction = async (context) => {
     data,
   };
 
-  store.push(entry);
+  await context.env.UPLOADS.put(entry.id, JSON.stringify(entry));
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
