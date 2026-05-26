@@ -45,7 +45,7 @@ npx wrangler pages dev dist --kv=UPLOADS
 A test upload script is available at `scripts/test-upload.sh`:
 
 ```bash
-./scripts/test-upload.sh
+./scripts/test-upload-local.sh
 ```
 
 ## Tests
